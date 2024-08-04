@@ -8,14 +8,24 @@ generator client {
 }
 
 model User {
-  id            String          @id @default(cuid())
-  name          String?
-  email         String          @unique
-  password      String
-  emailVerified DateTime?
-  image         String?
-  accounts      Account[]
-  sessions      Session[]
+  id                String    @id @default(cuid())
+  firstName         String?
+  lastName          String?
+  email             String    @unique
+  password          String
+  emailVerified     DateTime?
+  image             String?
+  accounts          Account[]
+  sessions          Session[]
+  dwollaCustomerUrl String?
+  dwollaCustomerId  String?
+  address1          String?
+  city              String?
+  state             String?
+  postalcode        String?
+  dateOfBirth       String?
+  ssn               String?
+
   // Optional for WebAuthn support
   Authenticator Authenticator[]
 
@@ -76,4 +86,18 @@ model Authenticator {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@id([userId, credentialID])
+}
+
+model BankAccount {
+  id               String  @id @default(cuid())
+  userId           String
+  availableBalance Int     @default(0)
+  currentBalance   Int     @default(0)
+  officialName     String?
+  mask             String?
+  intitutionId     String?
+  name             String?
+  type             String?
+  subType          String?
+  shareableId      String?
 }
