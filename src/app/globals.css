@@ -149,6 +149,15 @@
   .root-layout {
     @apply flex  items-center justify-between  shadow-lg  md:hidden;
   }
+
+  /* Bank Card */
+  .bank-card {
+    @apply relative flex h-[190px] w-full max-w-[320px] justify-between rounded-[20px] border border-white bg-primary shadow backdrop-blur-lg;
+  }
+
+  .bank-card_content {
+    @apply relative z-10 flex size-full max-w-[228px] flex-col justify-between rounded-l-[20px] bg-gray-700 bg-primary px-5 pb-4 pt-5;
+  }
 }
 
 @layer base {

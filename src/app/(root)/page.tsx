@@ -22,7 +22,11 @@ export default function Home() {
           totalCurrentBalance={1245.35}
         />
       </div>
-      <RightSidebar user={loggedIn} transaction={[]} banks={[]} />
+      <RightSidebar
+        user={loggedIn}
+        transaction={[]}
+        banks={[{ currentBalance: 123.5 }, { currentBalance: 123 }]}
+      />
     </section>
   );
 }
