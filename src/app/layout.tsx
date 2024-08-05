@@ -3,7 +3,8 @@ import { Inter, IBM_Plex_Serif } from "next/font/google";
 import "./globals.css";
 import { TanstackProvider } from "@/components/providers/tanstack-provider";
 import { ThemeProvider } from "@/components/providers/theme-provider";
-
+import { Toaster } from "@/components/ui/toaster";
+import { auth } from "@/lib/auth";
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 
 const ibmPlexSerif = IBM_Plex_Serif({
@@ -20,17 +21,21 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const user = await auth();
+
+  console.log(user);
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`${inter.variable} ${ibmPlexSerif.variable}`}>
         <TanstackProvider>
           <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-            {children}
+            <main>{children}</main>
+            <Toaster />
           </ThemeProvider>
         </TanstackProvider>
       </body>

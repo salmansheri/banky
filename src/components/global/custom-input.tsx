@@ -19,6 +19,8 @@ import { z } from "zod";
 import { useState } from "react";
 import { EyeIcon, EyeOffIcon } from "lucide-react";
 
+const formSchema = SignInFormSchema("sign-up");
+
 export enum FormFieldType {
   INPUT = "input",
   TEXTAREA = "textarea",
@@ -32,8 +34,8 @@ export enum FormFieldType {
 }
 
 interface CustomInputProps {
-  control: Control<z.infer<typeof SignInFormSchema>>;
-  name: FieldPath<z.infer<typeof SignInFormSchema>>;
+  control: Control<z.infer<typeof formSchema>>;
+  name: FieldPath<z.infer<typeof formSchema>>;
 
   label?: string;
   placeholder?: string;

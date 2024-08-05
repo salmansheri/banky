@@ -1,9 +1,12 @@
 import { Loader2 } from "lucide-react";
 import { Button } from "../ui/button";
+import { SignInFormSchema } from "@/lib/validation/sign-in";
+import { z } from "zod";
+const formSchema = SignInFormSchema("sign-up");
 
 interface SubmitButtonProps {
   type: "sign-in" | "sign-up";
-  user: string | null;
+  user: z.infer<typeof formSchema> | undefined;
   isLoading: boolean;
 }
 
