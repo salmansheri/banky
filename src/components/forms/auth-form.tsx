@@ -11,15 +11,20 @@ import { CustomInput, FormFieldType } from "../global/custom-input";
 import { Form } from "../ui/form";
 import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
-import { createUser, signInUser } from "@/lib/actions/user.action";
+import {
+  createUser,
+  CurrentUserType,
+  signInUser,
+} from "@/lib/actions/user.action";
 import { useToast } from "../ui/use-toast";
 import { signIn } from "next-auth/react";
 
 interface AuthFormProps {
   type: "sign-in" | "sign-up";
+  user?: CurrentUserType;
 }
 
-export const AuthForm: React.FC<AuthFormProps> = ({ type }) => {
+export const AuthForm: React.FC<AuthFormProps> = ({ type, user }) => {
   // const [user, setUser] = useState([]);
   const [showPassword, setShowPassword] = useState(false);
   const { toast } = useToast();
@@ -44,7 +49,7 @@ export const AuthForm: React.FC<AuthFormProps> = ({ type }) => {
     },
   });
 
-  const { mutate, data: user } = useMutation({
+  const { mutate, data } = useMutation({
     mutationFn: async (userData: z.infer<typeof formSchema>) => {
       const newUser = await createUser(userData);
 
@@ -55,8 +60,6 @@ export const AuthForm: React.FC<AuthFormProps> = ({ type }) => {
         title: "Success",
         description: "Successfully created new account.",
       });
-      form.reset();
-      router.push("/sign-in");
     },
     onError: (error) => {
       console.log(error);
@@ -86,8 +89,10 @@ export const AuthForm: React.FC<AuthFormProps> = ({ type }) => {
         signIn("credentials", {
           email: values.email,
           password: values.password,
-          redirect: true,
+          redirect: false,
         });
+
+        router.push("/link-account");
       } catch (error) {
         console.log(error);
       }

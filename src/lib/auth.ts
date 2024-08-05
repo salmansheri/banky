@@ -2,50 +2,43 @@ import NextAuth from "next-auth";
 import prisma from "./db";
 
 import Credentials from "next-auth/providers/credentials";
-import bcrypt from 'bcryptjs';
-
+import bcrypt from "bcryptjs";
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
-
   providers: [
     Credentials({
       name: "credentials",
       credentials: {
         email: { label: "email", type: "email" },
-        password: { label: "password", type: "password" }
+        password: { label: "password", type: "password" },
       },
       authorize: async (credentials) => {
         const user = await prisma.user.findUnique({
           where: {
             email: credentials?.email as string,
-          }
-        })
+          },
+        });
 
         if (!user || !user.password) {
-          throw new Error("Invalid user credentials")
+          throw new Error("Invalid user credentials");
         }
 
-        const isValidPassword = bcrypt.compare(credentials?.password as string, user?.password)
+        const isValidPassword = bcrypt.compare(
+          credentials?.password as string,
+          user?.password,
+        );
 
         if (!isValidPassword) {
-          throw new Error("Invalid  password")
+          throw new Error("Invalid  password");
         }
 
         return user;
-
-
-
-      }
-
-
-
-    })
+      },
+    }),
   ],
   pages: {
     signIn: "/sign-in",
-    newUser: "/sign-up"
-
-
+    newUser: "/sign-up",
   },
   callbacks: {
     async session({ session, token, user }) {
@@ -53,18 +46,12 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         ...session,
         user: {
           ...session.user,
-
-        }
-      }
+        },
+      };
     },
     async redirect({ url, baseUrl }) {
-      return baseUrl
-    }
+      return baseUrl;
+    },
   },
   debug: process.env.NODE_ENV === "development",
-  secret: process.env.AUTH_SECRET,
-  session: {
-    strategy: "jwt",
-  },
-
 });

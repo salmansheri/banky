@@ -16,8 +16,9 @@ import {
 import { EllipsisVertical } from "lucide-react";
 import { sidebarLinks } from "@/lib/constants";
 import Link from "next/link";
+import { Footer } from "./footer";
 
-export const MobileNavigation = () => {
+export const MobileNavigation = ({ user }: MobileNavProps) => {
   return (
     <div className="md:hidden flex justify-between items-center p-3">
       <div className="root-layout">
@@ -38,23 +39,28 @@ export const MobileNavigation = () => {
                 <EllipsisVertical className="text-white" />
               </Button>
             </SheetTrigger>
-            <SheetContent>
+            <SheetContent className="p-10">
               <SheetHeader>
                 <SheetTitle>Menu</SheetTitle>
               </SheetHeader>
-              <div className="mt-10 flex flex-col items-start gap-5">
-                {sidebarLinks.map(({ icon: Icon, label, route }) => {
-                  return (
-                    <Link
-                      key={label}
-                      href={route}
-                      className="flex items-center size-full gap-3 hover:bg-primary/40 p-3 rounded-lg"
-                    >
-                      <Icon />
-                      {label}
-                    </Link>
-                  );
-                })}
+              <div className="flex flex-col h-full justify-between">
+                <div className="mt-10 flex flex-col items-start gap-5">
+                  {sidebarLinks.map(({ icon: Icon, label, route }) => {
+                    return (
+                      <Link
+                        key={label}
+                        href={route}
+                        className="flex items-center size-full gap-3 hover:bg-primary/40 p-3 rounded-lg"
+                      >
+                        <Icon />
+                        {label}
+                      </Link>
+                    );
+                  })}
+                </div>
+                <div>
+                  <Footer user={user} />
+                </div>
               </div>
             </SheetContent>
           </Sheet>

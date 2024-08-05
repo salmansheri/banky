@@ -1,10 +1,9 @@
-import type { Metadata } from "next";
-import { Inter, IBM_Plex_Serif } from "next/font/google";
-import "./globals.css";
 import { TanstackProvider } from "@/components/providers/tanstack-provider";
 import { ThemeProvider } from "@/components/providers/theme-provider";
 import { Toaster } from "@/components/ui/toaster";
-import { auth } from "@/lib/auth";
+import type { Metadata } from "next";
+import { IBM_Plex_Serif, Inter } from "next/font/google";
+import "./globals.css";
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 
 const ibmPlexSerif = IBM_Plex_Serif({
@@ -26,9 +25,6 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const user = await auth();
-
-  console.log(user);
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`${inter.variable} ${ibmPlexSerif.variable}`}>

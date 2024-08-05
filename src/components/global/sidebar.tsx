@@ -6,6 +6,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ModeToggle } from "../ui/mode-toggle";
+import { Footer } from "./footer";
 
 export const Sidebar = ({ user }: SiderbarProps) => {
   const pathname = usePathname();
@@ -13,15 +14,18 @@ export const Sidebar = ({ user }: SiderbarProps) => {
   return (
     <section className="sidebar">
       <nav className="flex flex-col gap-4">
-        <Link href="/" className="mb-12 cursor-pointer items-center gap-2">
-          <Image
-            src="/logo-removebg.png"
-            alt="logo"
-            width={100}
-            height={100}
-            className=""
-          />
-        </Link>
+        <div className="w-full flex items-center justify-between">
+          <Link href="/" className="mb-12 cursor-pointer items-center gap-2">
+            <Image
+              src="/logo-removebg.png"
+              alt="logo"
+              width={100}
+              height={100}
+              className=""
+            />
+          </Link>
+          <ModeToggle />
+        </div>
 
         {sidebarLinks.map(({ icon: Icon, label, route }) => {
           const isActive =
@@ -31,7 +35,7 @@ export const Sidebar = ({ user }: SiderbarProps) => {
             <Link
               href={route}
               key={label}
-              className={cn("sidebar-link w-full", {
+              className={cn("sidebar-link ", {
                 "bg-primary text-white": isActive,
                 "hover:bg-primary/30 ": !isActive,
               })}
@@ -43,11 +47,8 @@ export const Sidebar = ({ user }: SiderbarProps) => {
         })}
       </nav>
 
-      <div className="flex justify-between items-center">
-        <div>footer</div>
-        <div>
-          <ModeToggle />
-        </div>
+      <div className="">
+        <Footer user={user} />
       </div>
     </section>
   );

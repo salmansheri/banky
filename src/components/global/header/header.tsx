@@ -1,5 +1,3 @@
-import { ModeToggle } from "@/components/ui/mode-toggle";
-
 interface HeaderProps extends HeaderBoxProps {}
 
 export const Header: React.FC<HeaderProps> = ({
