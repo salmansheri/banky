@@ -18,6 +18,7 @@ import {
 } from "@/lib/actions/user.action";
 import { useToast } from "../ui/use-toast";
 import { signIn } from "next-auth/react";
+import { PlaidLink } from "../global/plaid-link";
 
 interface AuthFormProps {
   type: "sign-in" | "sign-up";
@@ -89,10 +90,8 @@ export const AuthForm: React.FC<AuthFormProps> = ({ type, user }) => {
         signIn("credentials", {
           email: values.email,
           password: values.password,
-          redirect: false,
+          redirect: true,
         });
-
-        router.push("/link-account");
       } catch (error) {
         console.log(error);
       }
@@ -117,7 +116,10 @@ export const AuthForm: React.FC<AuthFormProps> = ({ type, user }) => {
         </div>
       </header>
       {user ? (
-        <div className="flex flex-col gap-4">{/* Plaid Link */}</div>
+        <div className="flex flex-col gap-4">
+          {/* Plaid Link */}
+          <PlaidLink user={user} variant="primary" />
+        </div>
       ) : (
         <>
           <Form {...form}>

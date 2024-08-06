@@ -14,3 +14,7 @@ export function formatAmount(amount: number) {
 
   return formatter.format(amount);
 }
+
+export function parseStringify(value: any) {
+  return JSON.parse(JSON.stringify(value));
+}

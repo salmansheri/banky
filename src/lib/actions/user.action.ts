@@ -5,6 +5,9 @@ import { SignInFormSchema } from "../validation/sign-in";
 import prisma from "../db";
 import bcrypt from "bcryptjs";
 import { auth, signIn } from "../auth";
+import { CountryCode, Products } from "plaid";
+import { plaidClient } from "../plaid/plaid";
+import { parseStringify } from "../utils";
 
 const getHashedPassword = (password: string) => {
   const salt = bcrypt.genSaltSync(10);
@@ -81,6 +84,44 @@ export async function getCurrentUser() {
     return currentUser;
   } catch (error) {
     console.log(error);
+    return error;
+  }
+}
+
+export async function createLinkToken(user: User) {
+  try {
+    const tokenParams = {
+      user: {
+        client_user_id: user?.id,
+      },
+      client_name: `${user?.firstName} ${user?.lastName}`,
+      products: ["auth"] as Products[],
+      language: "en",
+      country_codes: ["US"] as CountryCode[],
+    };
+
+    const response = await plaidClient.linkTokenCreate(tokenParams);
+
+    return parseStringify(response);
+  } catch (error) {
+    console.log(error);
+    return error;
+  }
+}
+
+export async function exchangePublicToken({
+  publicToken,
+  user,
+}: exchangePublicTokenProps) {
+  try {
+    const response = await plaidClient.itemPublicTokenExchange({
+      public_token: publicToken,
+    });
+
+    const accessToken = response.data.access_token;
+    const itemId = response.data.item_id;
+  } catch (error) {
+    console.log(`An Error occured while creating exchanging token: ${error}`);
     return error;
   }
 }

@@ -50,7 +50,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       };
     },
     async redirect({ url, baseUrl }) {
-      return baseUrl;
+      return "/link-account";
     },
   },
   debug: process.env.NODE_ENV === "development",
