@@ -25,6 +25,7 @@ model User {
   postalcode        String?
   dateOfBirth       String?
   ssn               String?
+  bankAccounts BankAccount[]
 
   // Optional for WebAuthn support
   Authenticator Authenticator[]
@@ -91,6 +92,7 @@ model Authenticator {
 model BankAccount {
   id               String  @id @default(cuid())
   userId           String
+  accountId        String
   availableBalance Int     @default(0)
   currentBalance   Int     @default(0)
   officialName     String?
@@ -100,4 +102,6 @@ model BankAccount {
   type             String?
   subType          String?
   shareableId      String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: NoAction)
 }

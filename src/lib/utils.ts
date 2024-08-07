@@ -18,3 +18,11 @@ export function formatAmount(amount: number) {
 export function parseStringify(value: any) {
   return JSON.parse(JSON.stringify(value));
 }
+
+export function encryptId(id: string) {
+  return btoa(id);
+}
+
+export function decryptId(id: string) {
+  return atob(id);
+}

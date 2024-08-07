@@ -76,6 +76,7 @@ CREATE TABLE "Authenticator" (
 CREATE TABLE "BankAccount" (
     "id" TEXT NOT NULL,
     "userId" TEXT NOT NULL,
+    "accountId" TEXT NOT NULL,
     "availableBalance" INTEGER NOT NULL DEFAULT 0,
     "currentBalance" INTEGER NOT NULL DEFAULT 0,
     "officialName" TEXT,
@@ -106,3 +107,6 @@ ALTER TABLE "Session" ADD CONSTRAINT "Session_userId_fkey" FOREIGN KEY ("userId"
 
 -- AddForeignKey
 ALTER TABLE "Authenticator" ADD CONSTRAINT "Authenticator_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "BankAccount" ADD CONSTRAINT "BankAccount_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE NO ACTION ON UPDATE CASCADE;
