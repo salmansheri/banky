@@ -13,7 +13,10 @@ import {
   Products,
 } from "plaid";
 import { plaidClient } from "../plaid/plaid";
-import { encryptId, parseStringify } from "../utils";
+import { encryptId, extractCustomerIdFromUrl, parseStringify } from "../utils";
+import { revalidatePath } from "next/cache";
+import { addFundingSource, createDwollaCustomer } from "./dwolla.actions";
+import { createBankAccount } from "./bankaccount.actions";
 
 const getHashedPassword = (password: string) => {
   const salt = bcrypt.genSaltSync(10);
@@ -26,6 +29,27 @@ type SignInFormSchemaType = z.infer<ReturnType<typeof SignInFormSchema>>;
 export async function createUser(userData: any): Promise<SignInFormSchemaType> {
   try {
     const dbPassword = getHashedPassword(userData.password);
+
+    const dwollaCustomerUrl = await createDwollaCustomer({
+      firstName: userData?.firstName,
+      lastName: userData?.lastName,
+      email: userData?.email,
+      address1: userData?.address,
+      city: userData?.city,
+      dateOfBirth: userData.dateOfBirth,
+      postalCode: userData?.postalCode,
+      ssn: userData?.ssn,
+      state: userData?.state,
+
+      type: "personal",
+    });
+
+    if (!dwollaCustomerUrl) {
+      throw new Error("Error creating dwolla customer");
+    }
+
+    const dwollaCustomerId = extractCustomerIdFromUrl(dwollaCustomerUrl);
+
     const newUser = await prisma.user.create({
       data: {
         firstName: userData.firstName,
@@ -37,8 +61,11 @@ export async function createUser(userData: any): Promise<SignInFormSchemaType> {
         state: userData.state,
         postalcode: userData.postalCode,
         ssn: userData.ssn,
+        dwollaCustomerId,
+        dwollaCustomerUrl,
       },
     });
+
     // @ts-ignore
     return newUser;
   } catch (error) {
@@ -48,25 +75,8 @@ export async function createUser(userData: any): Promise<SignInFormSchemaType> {
   }
 }
 
-export async function signInUser(email?: string, password?: string) {
-  try {
-    const userSignIn = await signIn("credentials", {
-      email,
-      password,
-    });
-
-    if (userSignIn) {
-      console.log("logged in");
-    }
-
-    return userSignIn;
-  } catch (error) {
-    console.log(`auth error: ${error}`);
-    return error;
-  }
-}
-
 export type CurrentUserType = {
+  id: string;
   firstName: string;
   lastName: string;
   email: string;
@@ -82,6 +92,7 @@ export async function getCurrentUser() {
     });
 
     const currentUser: CurrentUserType = {
+      id: user?.id!,
       firstName: user?.firstName!,
       lastName: user?.lastName!,
       email: user?.email!,
@@ -108,7 +119,9 @@ export async function createLinkToken(user: User) {
 
     const response = await plaidClient.linkTokenCreate(tokenParams);
 
-    return parseStringify(response);
+    return parseStringify({
+      linkToken: response.data.link_token,
+    });
   } catch (error) {
     console.log(error);
     return error;
@@ -157,6 +170,7 @@ export async function exchangePublicToken({
     // If the funding source URL is not created, throw an error
     if (!fundingSourceUrl) throw Error;
 
+    // Create a bank account using the user Id, itemId, account Id, access Token, funding source URL, and shareable Id
     await createBankAccount({
       userId: user.id,
       bankId: itemId,
@@ -164,6 +178,12 @@ export async function exchangePublicToken({
       accessToken,
       fundingSourceUrl,
       shareableId: encryptId(accountData.account_id),
+    });
+    // Revalidate the path reflect the changes
+    revalidatePath("/");
+
+    return parseStringify({
+      publicTokenExhange: "Co",
     });
   } catch (error) {
     console.log(`An Error occured while creating exchanging token: ${error}`);

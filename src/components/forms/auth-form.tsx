@@ -1,24 +1,20 @@
 "use client";
 
+import { createUser, CurrentUserType } from "@/lib/actions/user.action";
 import { SignInFormSchema } from "@/lib/validation/sign-in";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation } from "@tanstack/react-query";
+import { signIn } from "next-auth/react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { SubmitButton } from "../button/submit-button";
 import { CustomInput, FormFieldType } from "../global/custom-input";
-import { Form } from "../ui/form";
-import { useMutation } from "@tanstack/react-query";
-import { useRouter } from "next/navigation";
-import {
-  createUser,
-  CurrentUserType,
-  signInUser,
-} from "@/lib/actions/user.action";
-import { useToast } from "../ui/use-toast";
-import { signIn } from "next-auth/react";
 import { PlaidLink } from "../global/plaid-link";
+import { Form } from "../ui/form";
+import { useToast } from "../ui/use-toast";
 
 interface AuthFormProps {
   type: "sign-in" | "sign-up";
@@ -61,9 +57,16 @@ export const AuthForm: React.FC<AuthFormProps> = ({ type, user }) => {
         title: "Success",
         description: "Successfully created new account.",
       });
+
+      router.push("/sign-in");
     },
     onError: (error) => {
       console.log(error);
+      toast({
+        title: "Something Went Wrong",
+        description: "Please try again Later",
+        variant: "destructive",
+      });
     },
   });
 
@@ -118,6 +121,7 @@ export const AuthForm: React.FC<AuthFormProps> = ({ type, user }) => {
       {user ? (
         <div className="flex flex-col gap-4">
           {/* Plaid Link */}
+          {/* @ts-ignore  */}
           <PlaidLink user={user} variant="primary" />
         </div>
       ) : (

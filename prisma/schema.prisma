@@ -8,10 +8,10 @@ generator client {
 }
 
 model User {
-  id                String    @id @default(cuid())
+  id                String        @id @default(cuid())
   firstName         String?
   lastName          String?
-  email             String    @unique
+  email             String        @unique
   password          String
   emailVerified     DateTime?
   image             String?
@@ -25,7 +25,7 @@ model User {
   postalcode        String?
   dateOfBirth       String?
   ssn               String?
-  bankAccounts BankAccount[]
+  bankAccounts      BankAccount[]
 
   // Optional for WebAuthn support
   Authenticator Authenticator[]
@@ -91,8 +91,12 @@ model Authenticator {
 
 model BankAccount {
   id               String  @id @default(cuid())
-  userId           String
+  userId           String?
+  bankId           String
   accountId        String
+  accessToken      String?
+  fundingSourceUrl String?
+
   availableBalance Int     @default(0)
   currentBalance   Int     @default(0)
   officialName     String?
@@ -103,5 +107,5 @@ model BankAccount {
   subType          String?
   shareableId      String?
 
-  user User @relation(fields: [userId], references: [id], onDelete: NoAction)
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
 }
