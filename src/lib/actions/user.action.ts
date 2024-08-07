@@ -17,6 +17,7 @@ import { encryptId, extractCustomerIdFromUrl, parseStringify } from "../utils";
 import { revalidatePath } from "next/cache";
 import { addFundingSource, createDwollaCustomer } from "./dwolla.actions";
 import { createBankAccount } from "./bankaccount.actions";
+import { redirect } from "next/navigation";
 
 const getHashedPassword = (password: string) => {
   const salt = bcrypt.genSaltSync(10);

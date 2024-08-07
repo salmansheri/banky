@@ -22,6 +22,7 @@
     "@tanstack/react-query-devtools": "^5.51.21",
     "@types/bcrypt": "^5.0.2",
     "@types/bcryptjs": "^2.4.6",
+    "banking": ".",
     "bcryptjs": "^2.4.3",
     "chart.js": "^4.4.3",
     "class-variance-authority": "^0.7.0",

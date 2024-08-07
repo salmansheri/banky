@@ -31,9 +31,10 @@ export const PlaidLink = ({ user, variant }: PlaidLinkProps) => {
         publicToken: public_token,
         user,
       });
+
       router.push("/");
     },
-    [router, user],
+    [user],
   );
   const config: PlaidLinkOptions = {
     token,
@@ -44,7 +45,7 @@ export const PlaidLink = ({ user, variant }: PlaidLinkProps) => {
   return (
     <>
       {variant === "primary" ? (
-        <Button disabled={!ready} onClick={() => open}>
+        <Button onClick={() => open()} disabled={!ready}>
           Connect Bank
         </Button>
       ) : variant === "ghost" ? (
