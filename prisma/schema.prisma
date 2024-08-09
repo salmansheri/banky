@@ -101,11 +101,29 @@ model BankAccount {
   currentBalance   Int     @default(0)
   officialName     String?
   mask             String?
-  intitutionId     String?
+  institutionId    String?
   name             String?
   type             String?
   subType          String?
   shareableId      String?
 
   user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+}
+
+model Transaction {
+  id             String   @id @default(cuid())
+  name           String
+  paymentChannel String
+  type           String
+  accountId      String
+  amount         Int
+  pending        Boolean  @default(false)
+  category       String?
+  date           String?
+  Image          String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  channel        String?
+  senderBankId   String?
+  receiverBankId String?
 }

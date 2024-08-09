@@ -262,7 +262,7 @@ declare interface getAccountsProps {
 }
 
 declare interface getAccountProps {
-  appwriteItemId: string;
+  itemId: string;
 }
 
 declare interface getInstitutionProps {
@@ -322,7 +322,7 @@ declare interface getBanksProps {
 }
 
 declare interface getBankProps {
-  documentId: string;
+  bankId: string;
 }
 
 declare interface getBankByAccountIdProps {

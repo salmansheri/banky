@@ -1,23 +1,21 @@
 "use server";
 
-import { z } from "zod";
-import { SignInFormSchema } from "../validation/sign-in";
-import prisma from "../db";
 import bcrypt from "bcryptjs";
-import { auth, signIn } from "../auth";
+import { revalidatePath } from "next/cache";
 import {
-  AccountType,
   CountryCode,
   ProcessorTokenCreateRequest,
   ProcessorTokenCreateRequestProcessorEnum,
-  Products,
+  Products
 } from "plaid";
+import { z } from "zod";
+import { auth } from "../auth";
+import prisma from "../db";
 import { plaidClient } from "../plaid/plaid";
 import { encryptId, extractCustomerIdFromUrl, parseStringify } from "../utils";
-import { revalidatePath } from "next/cache";
-import { addFundingSource, createDwollaCustomer } from "./dwolla.actions";
+import { SignInFormSchema } from "../validation/sign-in";
 import { createBankAccount } from "./bankaccount.actions";
-import { redirect } from "next/navigation";
+import { addFundingSource, createDwollaCustomer } from "./dwolla.actions";
 
 const getHashedPassword = (password: string) => {
   const salt = bcrypt.genSaltSync(10);
@@ -81,6 +79,17 @@ export type CurrentUserType = {
   firstName: string;
   lastName: string;
   email: string;
+  dwollaCustomerUrl: string;
+  dwollaCustomerId: string;
+  address1: string;
+  city: string;
+  state: string;
+  postalCode: string;
+  dateOfBirth: string;
+  ssn: string;
+
+
+
 };
 
 export async function getCurrentUser() {
@@ -97,6 +106,16 @@ export async function getCurrentUser() {
       firstName: user?.firstName!,
       lastName: user?.lastName!,
       email: user?.email!,
+      address1: user?.address1!,
+      city: user?.city!,
+      dwollaCustomerId: user?.dwollaCustomerId!,
+      dwollaCustomerUrl: user?.dwollaCustomerUrl!,
+      state: user?.state!,
+      postalCode: user?.postalcode!,
+      dateOfBirth: user?.dateOfBirth!,
+      ssn: user?.ssn!,
+
+
     };
 
     return currentUser;
@@ -169,7 +188,7 @@ export async function exchangePublicToken({
     });
 
     // If the funding source URL is not created, throw an error
-    if (!fundingSourceUrl) throw Error;
+    if (!fundingSourceUrl) throw new Error("Error Creating funding source");
 
     // Create a bank account using the user Id, itemId, account Id, access Token, funding source URL, and shareable Id
     await createBankAccount({
@@ -184,10 +203,46 @@ export async function exchangePublicToken({
     revalidatePath("/");
 
     return parseStringify({
-      publicTokenExhange: "Co",
+      publicTokenExhange: "complete",
     });
   } catch (error) {
     console.log(`An Error occured while creating exchanging token: ${error}`);
     return error;
   }
+}
+
+
+export async function getBanks({ userId }: getBanksProps) {
+  try {
+    const banks = await prisma.bankAccount.findMany({
+      where: {
+        userId,
+      }
+    });
+
+    return banks;
+
+  } catch (error) {
+    console.log(error);
+    return error;
+  }
+
+
+}
+export async function getBank({ bankId }: getBankProps) {
+  try {
+    const bank = await prisma.bankAccount.findUnique({
+      where: {
+        id: bankId,
+      }
+    })
+
+    return bank;
+
+  } catch (error) {
+    console.log(error);
+    return error;
+  }
+
+
 }

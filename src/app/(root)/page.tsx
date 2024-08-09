@@ -1,12 +1,24 @@
 import { Header } from "@/components/global/header/header";
 import { RightSidebar } from "@/components/global/right-sidebar";
 import { TotalBalanceBox } from "@/components/global/total-balance-box";
-import { Button } from "@/components/ui/button";
+import { getAccount, getAccounts } from "@/lib/actions/bankaccount.actions";
 import { getCurrentUser } from "@/lib/actions/user.action";
-import Image from "next/image";
 
-export default async function Home() {
+export default async function Home({
+  searchParams: { id, page },
+}: SearchParamProps) {
   const currentUser: any = await getCurrentUser();
+
+  const accounts = await getAccounts({
+    userId: currentUser.id,
+  });
+
+  if (!accounts) return;
+
+  const itemId = (id as string) || accounts?.data[0]?.itemId;
+
+  const account = await getAccount({ itemId });
+
   return (
     <section className="home">
       <div className="home-content">
@@ -18,12 +30,16 @@ export default async function Home() {
         />
 
         <TotalBalanceBox
-          accounts={[]}
-          totalBanks={1}
-          totalCurrentBalance={1245.35}
+          accounts={accounts?.data}
+          totalBanks={accounts?.totalBanks}
+          totalCurrentBalance={accounts?.totalCurrentBalance}
         />
       </div>
-      <RightSidebar user={currentUser} transaction={[]} banks={[{}, {}]} />
+      <RightSidebar
+        user={currentUser}
+        transactions={account?.transaction}
+        banks={accounts?.data?.slice(0, 2)}
+      />
     </section>
   );
 }
