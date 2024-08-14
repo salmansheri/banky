@@ -1,4 +1,4 @@
-'use server';
+"use server";
 
 import prisma from "../db";
 import {
@@ -44,16 +44,11 @@ export async function createBankAccount({
   }
 }
 
-
-
-
-
-
 // Get multiple bank accounts
 export const getAccounts = async ({ userId }: getAccountsProps) => {
   try {
     // get banks from db
-    const banks = await getBanks({ userId }) as BankAccount[];
+    const banks = (await getBanks({ userId })) as BankAccount[];
 
     const accounts = await Promise.all(
       banks?.map(async (bank: BankAccount) => {
@@ -83,7 +78,7 @@ export const getAccounts = async ({ userId }: getAccountsProps) => {
         };
 
         return account;
-      })
+      }),
     );
 
     const totalBanks = accounts.length;
@@ -101,7 +96,7 @@ export const getAccounts = async ({ userId }: getAccountsProps) => {
 export const getAccount = async ({ itemId }: getAccountProps) => {
   try {
     // get bank from db
-    const bank = await getBank({ bankId: itemId }) as BankAccount;
+    const bank = (await getBank({ bankId: itemId })) as BankAccount;
 
     // get account info from plaid
     const accountsResponse = await plaidClient.accountsGet({
@@ -245,7 +240,7 @@ export const createTransfer = async () => {
     };
 
     const responseCreateResponse = await plaidClient.transferCreate(
-      transferCreateRequest
+      transferCreateRequest,
     );
 
     const transfer = responseCreateResponse.data.transfer;
@@ -253,9 +248,7 @@ export const createTransfer = async () => {
   } catch (error) {
     console.error(
       "An error occurred while creating transfer authorization:",
-      error
+      error,
     );
   }
 };
-
-

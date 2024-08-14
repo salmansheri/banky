@@ -6,7 +6,7 @@ import {
   CountryCode,
   ProcessorTokenCreateRequest,
   ProcessorTokenCreateRequestProcessorEnum,
-  Products
+  Products,
 } from "plaid";
 import { z } from "zod";
 import { auth } from "../auth";
@@ -87,9 +87,6 @@ export type CurrentUserType = {
   postalCode: string;
   dateOfBirth: string;
   ssn: string;
-
-
-
 };
 
 export async function getCurrentUser() {
@@ -114,8 +111,6 @@ export async function getCurrentUser() {
       postalCode: user?.postalcode!,
       dateOfBirth: user?.dateOfBirth!,
       ssn: user?.ssn!,
-
-
     };
 
     return currentUser;
@@ -211,38 +206,31 @@ export async function exchangePublicToken({
   }
 }
 
-
 export async function getBanks({ userId }: getBanksProps) {
   try {
     const banks = await prisma.bankAccount.findMany({
       where: {
         userId,
-      }
+      },
     });
 
     return banks;
-
   } catch (error) {
     console.log(error);
     return error;
   }
-
-
 }
 export async function getBank({ bankId }: getBankProps) {
   try {
     const bank = await prisma.bankAccount.findUnique({
       where: {
         id: bankId,
-      }
-    })
+      },
+    });
 
     return bank;
-
   } catch (error) {
     console.log(error);
     return error;
   }
-
-
 }
